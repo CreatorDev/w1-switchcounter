@@ -47,7 +47,7 @@ $ git clone http://github.com/mattatkinson/w1-switchcounter
 
 Before attempting to build and run the example, you need to add a PSK (pre-shared key) to the source code to securely link the Ci40 to your account on the Device Server.
 
-In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create and account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code within custom/switch/Switch/switch.c:
+In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create and account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code within custom/w1-switchcounter/Switch/switch.c:
 
 <pre>
 ... 
@@ -61,7 +61,7 @@ int main(void)
 
 ### Building your Project for OpenWrt
 
-Navigate back to the openwrt SDK folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be to the 'custom' folder created by the earlier git clone):
+Navigate back to the openwrt SDK folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
 
 <pre>
 $ cd openwrt
@@ -72,7 +72,7 @@ Now update your OpenWrt feeds to add your new package and then build:
 
 <pre>
 $ ./scripts/feeds update -a && ./scripts/feeds install -a
-$ make package/switch/compile
+$ make package/w1-switchcounter/compile
 </pre>
 
 This first build will take longer than normal, as the dependencies (such as awalwm2m) must be built first. Future builds of the same application will be much faster.
