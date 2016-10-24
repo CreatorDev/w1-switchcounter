@@ -27,14 +27,14 @@ Either run the following script in the desired folder on your Linux PC/VM:
 
 [buildenvironment.sh](https://drive.google.com/open?id=0B5jPTn496dprUHppR25oZGthUmM)
 
-run it with:
+Move the script to a folder of your choice, and run it with:
 
 <pre>
 $ chmod +x buildenvironment.sh
 $ ./buildenvironment.sh
 </pre>
 
-then [skip ahead to configuring your application](#securely-connecting-to-device-server) one the process has finished. You will be left with 2 folders in the directory you execute the scripts: openwrt/ and custom/ . 
+then [skip ahead to configuring your application](#securely-connecting-to-device-server) once the process has finished. You will be left with 2 folders within the directory: openwrt/ and custom/. 
 
 **--- OR ---**
 
