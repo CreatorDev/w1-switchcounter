@@ -81,7 +81,7 @@ $ ./scripts/feeds update -a && ./scripts/feeds install -a
 
 Before attempting to build and run the example, you need to add a PSK (pre-shared key) to the source code to securely link the Ci40 to your account on the Device Server.
 
-In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create and account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code within custom/w1-switchcounter/Switch/switch.c:
+In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create an account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code (in between the quotes) within custom/w1-switchcounter/Switch/switch.c:
 
 <pre>
 ... 
