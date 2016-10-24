@@ -21,6 +21,24 @@ It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros m
 
 ## Step-by-Step Setup Instructions
 
+There are 2 ways to complete the set up process. 
+
+Either run the following script in the desired folder on your Linux PC/VM:
+
+[buildenvironment.sh](https://drive.google.com/open?id=0B5jPTn496dprUHppR25oZGthUmM)
+
+run it with:
+
+<pre>
+$ ./buildenvironment.sh
+</pre>
+
+then [skip ahead to configuring your application](#securely-connecting-to-device-server) one the process has finished. You will be left with 2 folders in the directory you execute the scripts: openwrt/ and custom/ . 
+
+**--- OR ---**
+
+Complete the following steps manually:
+
 First, you need to install the OpenWrt build dependencies on your machine:
 
 <pre>
@@ -43,6 +61,21 @@ $ mkdir custom && cd custom
 $ git clone http://github.com/mattatkinson/w1-switchcounter
 </pre>
 
+### Set up your OpenWrt feed
+
+Navigate back to the openwrt SDK folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
+
+<pre>
+$ cd openwrt
+$ echo src-link custom /home/username/ci40/custom >> feeds.conf.default
+</pre>
+
+Now update your OpenWrt feeds to add your new package and then build:
+
+<pre>
+$ ./scripts/feeds update -a && ./scripts/feeds install -a
+</pre>
+
 ### Securely Connecting to Device Server
 
 Before attempting to build and run the example, you need to add a PSK (pre-shared key) to the source code to securely link the Ci40 to your account on the Device Server.
@@ -59,23 +92,16 @@ int main(void)
 ... 
 </pre>
 
-### Building your Project for OpenWrt
+Save the file, and move onto building the application.
 
-Navigate back to the openwrt SDK folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
+### Building your Application
 
+Run the following command in your openwrt folder:
 <pre>
-$ cd openwrt
-$ echo src-link custom /home/username/ci40/custom >> feeds.conf.default
-</pre>
-
-Now update your OpenWrt feeds to add your new package and then build:
-
-<pre>
-$ ./scripts/feeds update -a && ./scripts/feeds install -a
 $ make package/w1-switchcounter/compile
 </pre>
 
-This first build will take longer than normal, as the dependencies (such as awalwm2m) must be built first. Future builds of the same application will be much faster.
+There are normally a lot of warnings created at the start of the build process, but they are not a concern. This first build will take longer than normal, as the dependencies (such as awalwm2m) must be built first. Future builds of the same application will be much faster.
 
 Once the build is complete, you can find the ipk file in the bin/pistachio/packages/custom folder.
 
