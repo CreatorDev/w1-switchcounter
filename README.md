@@ -15,12 +15,10 @@ Areas covered in this project include:
 
 ## Assumptions
 
-This guide assumes that you have flashed the latest Ci40 Creator image onto your Ci40 [**Instructions**](http://docs.creatordev.io) and that you have completed the steps in the [quick start guide](../../guides/quick-start-guide).
-
+This guide assumes that you have flashed the latest Ci40 Creator image onto your Ci40 [**Instructions**](http://docs.creatordev.io) and that you have completed the steps in the [quick start guide](../../guides/quick-start-guide). On Ci40, you may need to install awalwm2m and letmecreate (opkg update && opkg install letmecreate awal2m2m) if you are not using a Creator image.
 
 It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros may work, but this cannot be guaranteed).
 
- 
 ## Step-by-Step Setup Instructions
 
 First, you need to install the OpenWrt build dependencies on your machine:
@@ -41,7 +39,8 @@ $ mkdir openwrt && tar -xvf OpenWrt-SDK-0.10.4-pistachio-marduk_gcc-5.3.0_musl-1
 Git clone the example project repository:
 
 <pre>
-$ git clone **SwitchExample**
+$ mkdir custom && cd custom
+$ git clone http://github.com/mattatkinson/w1-switchcounter
 </pre>
 
 ### Securely Connecting to Device Server
@@ -120,3 +119,5 @@ If you then look up Temperature instead of Digital Input you will see:
 * ObjectID - 3303
 * Sensor Value - ResourceID - 5700
 * Sensor Value - Data Type - Float
+
+TBC...
