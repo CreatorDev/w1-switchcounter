@@ -30,6 +30,7 @@ Either run the following script in the desired folder on your Linux PC/VM:
 run it with:
 
 <pre>
+$ chmod +x buildenvironment.sh
 $ ./buildenvironment.sh
 </pre>
 
