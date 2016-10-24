@@ -24,7 +24,7 @@ It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros m
 First, you need to install the OpenWrt build dependencies on your machine:
 
 <pre>
-$ sudo apt-get install libncurses5-dev libncursesw5-dev zlib1g-dev libssl-dev gawk subversion device-tree-compiler
+$ sudo apt-get install git libncurses5-dev libncursesw5-dev zlib1g-dev libssl-dev gawk subversion device-tree-compiler
 </pre>
 
 ### Get the SDK and Source Code
