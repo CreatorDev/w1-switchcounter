@@ -1,31 +1,19 @@
 # w1-switchcounter
 ----
 
-
 In this project we will connect a Ci40 to Device Server and log the number of times a button is pressed. This number will be visible on the Developer Console web interface.
 
- 
 Areas covered in this project include:
 
-
 * Cross-compiling a package for OpenWrt using the SDK
-
 * LetMeCreate library
-
 * Awalwm2m
-
 * Device Server
-
 * Developer Console
- 
 
 ---
 
- 
-
 ## Assumptions
-
- 
 
 This guide assumes that you have flashed the latest Ci40 Creator image onto your Ci40 [**Instructions**](http://docs.creatordev.io) and that you have completed the steps in the [quick start guide](../../guides/quick-start-guide).
 
@@ -35,24 +23,18 @@ It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros m
  
 ## Step-by-Step Setup Instructions
 
-
 First, you need to install the OpenWrt build dependencies on your machine:
 
 <pre>
-
 $ sudo apt-get install libncurses5-dev libncursesw5-dev zlib1g-dev libssl-dev gawk subversion device-tree-compiler
-
 </pre>
 
-
 ### Get the SDK and Source Code
-
 
 Then you need to download and extract the OpenWrt SDK:
 
 <pre>
 $ wget https://downloads.creatordev.io/pistachio/marduk/OpenWrt-SDK-0.10.4-pistachio-marduk_gcc-5.3.0_musl-1.1.14.Linux-x86_64.tar.bz2
-
 $ mkdir openwrt && tar -xvf OpenWrt-SDK-0.10.4-pistachio-marduk_gcc-5.3.0_musl-1.1.14.Linux-x86_64.tar.bz2 -C openwrt/ --strip-components 1
 </pre>
 
@@ -68,21 +50,15 @@ Before attempting to build and run the example, you need to add a PSK (pre-share
 
 In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create and account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code within custom/switch/Switch/switch.c:
 
-<code>
+<pre>
 ... 
-
 int main(void) 
-
 { 
-
-    char \*clientName = "Creator Digital Input"; 
-
-    char \*clientIdentity = ""; 
-
-    char \*clientSecretHex = ""; 
-
+    char *clientName = "Creator Digital Input"; 
+    char *clientIdentity = ""; 
+    char *clientSecretHex = ""; 
 ... 
-</code>
+</pre>
 
 ### Building your Project for OpenWrt
 
@@ -97,7 +73,6 @@ Now update your OpenWrt feeds to add your new package and then build:
 
 <pre>
 $ ./scripts/feeds update -a && ./scripts/feeds install -a
-
 $ make package/switch/compile
 </pre>
 
@@ -136,19 +111,12 @@ There are 2 things you need to change to switch from counting switch presses to 
 
 IPSO is a standard to allow interoperability between LWM2M devices. If you look under "Devices" on the [Developer Console](http://console.creatordev.io) you will find a tab for Object Definitions. There you can see that we have listed all the different IPSO standard objects and resources. If you would like a primer on LWM2M, view our introductory guide [here](../../../deviceserver/guides/lwm2m-overview). If you look up Digital Input on this list you will see some key pieces of information:
 
-
 * ObjectID - 3200
-
 * Digital Input Counter - ResourceID - 5501
-
 * Digital Input Counter - Data Type - Integer
-
 
 If you then look up Temperature instead of Digital Input you will see:
 
-
 * ObjectID - 3303
-
 * Sensor Value - ResourceID - 5700
-
 * Sensor Value - Data Type - Float
