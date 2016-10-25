@@ -123,11 +123,11 @@ Once you've copied the file, you can install your package and run the applicatio
 
 ### Viewing the Data on the Developer Console
 
-[The Developer Console](http://console.creatordev.io) provides and interface to view the devices connected to Device Server. With your application running on Ci40, navigate to the "Devices" page. Select the device, select Object ID: 3200 and you will see the number of times the button has been pressed. You can refresh this value using the on-screen refresh button.
+[The Developer Console](http://console.creatordev.io) provides and interface to view the devices connected to Device Server. With your application running on Ci40, navigate to the "Devices" page. Select the device, select Object ID: 3200, and you will see the number of times the button (SW1 on Ci40) has been pressed. You can refresh this value using the on-screen refresh button.
 
 ## Adding a Temperature Sensor
 
-A simple way to learn more about how the code works is to edit it to add more features. To do this we will use a Thermo3 Click board (connected to MirkoBUS port 1) to make temperature reading visibles on the Developer Console alongside the switch counter.
+A simple way to learn more about how the code works is to edit it to add more features. To do this we will use a Thermo3 Click board (connected to MikroBUS port 1) to make temperature reading visibles on the Developer Console alongside the switch counter.
 
 First, you will want to copy and rename your switch.c file to keep a backup.
 
