@@ -127,7 +127,7 @@ Once you've copied the file, you can install your package and run the applicatio
 
 ## Adding a Temperature Sensor
 
-A simple way to learn more about how the code works is to edit it to add more features. The parts of the code you ahve to change will introduce important concepts when writing awa code for Ci40. To do this we will use a Thermo3 Click board (connected to MikroBUS port 1) to make temperature reading visible on the Developer Console instead of the switch counter.
+A simple way to learn more about how the code works is to edit it to add more features. The parts of the code you have to change will introduce important concepts when writing awa code for Ci40. To do this we will use a Thermo3 Click board (connected to MikroBUS port 1) to make temperature reading visible on the Developer Console instead of the switch counter.
 
 First, you will want to copy and rename your switch.c file to keep a backup.
 
@@ -230,4 +230,4 @@ Replace the while(1) loop within the main() with this:
 
 _Note that if you changed the variable names, counter[instance] will need to be changed to match your new name._
 
-This block of code is 'borrowed' from the LetMeCreate library examples [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3). We've modified it slightly to add the lwm2m resource update and add a delay between readings.
+This block of code is 'borrowed' from the LetMeCreate library examples [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3). We've modified it slightly to add the lwm2m resource update and add a delay between readings. You should now be able to build the project exacltly as before, and run it on Ci40.
