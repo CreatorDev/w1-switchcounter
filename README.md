@@ -127,7 +127,7 @@ Once you've copied the file, you can install your package and run the applicatio
 
 ## Adding a Temperature Sensor
 
-A simple way to learn more about how the code works is to edit it to add more features. To do this we will use a Thermo3 Click board (connected to MikroBUS port 1) to make temperature reading visibles on the Developer Console alongside the switch counter.
+A simple way to learn more about how the code works is to edit it to add more features. The parts of the code you ahve to change will introduce important concepts when writing awa code for Ci40. To do this we will use a Thermo3 Click board (connected to MikroBUS port 1) to make temperature reading visible on the Developer Console instead of the switch counter.
 
 First, you will want to copy and rename your switch.c file to keep a backup.
 
@@ -135,7 +135,9 @@ There are 2 things you need to change to switch from counting switch presses to 
 
 ### Changing IPSO Object definition
 
-IPSO is a standard to allow interoperability between LWM2M devices. If you look under "Devices" on the [Developer Console](http://console.creatordev.io) you will find a tab for Object Definitions. There you can see that we have listed all the different IPSO standard objects and resources. If you would like a primer on LWM2M, view our introductory guide [here](../../../deviceserver/guides/lwm2m-overview). If you look up Digital Input on this list you will see some key pieces of information:
+IPSO is a standard to allow interoperability between LWM2M devices. If you look under "Devices" on the [Developer Console](http://console.creatordev.io) you will find a tab for Object Definitions. There you can see that we have listed all the different IPSO standard objects and resources. If you would like a primer on LWM2M, view our introductory guide [here](../../../deviceserver/guides/lwm2m-overview). 
+
+If you look up Digital Input on this list you will see some key pieces of information:
 
 * ObjectID - 3200
 * Digital Input Counter - ResourceID - 5501
@@ -147,4 +149,85 @@ If you then look up Temperature instead of Digital Input you will see:
 * Sensor Value - ResourceID - 5700
 * Sensor Value - Data Type - Float
 
-TBC...
+Looking at the switch.c code, you will see that 3200 and 5501 are used in several places. This could be put into a variable, but for the purposes of this workshop, having the numbers makes it clearer where the objectID and ResourceID are used.
+
+Change all the instances of 3200 to 3303, and all instances of 5501 with 5700.  That takes care of the first 2 key points. The third is that Temperature IPSO object uses a float rather than an integer. To change this you need to edit the following line:
+
+<pre>
+AwaStaticClient_DefineResource(awaClient, 3200, 5501, "Counter",AwaResourceType_Integer, 0, 1, AwaResourceOperations_ReadOnly);
+</pre>
+
+to have AwaResourcetype_Float instead of AwaResourceType_Integer. This will correctly set up the Resource to expect a float value. Change the following line within the counter definition struct:
+
+<pre>
+int Totalcount;
+</pre>
+
+to
+
+<pre>
+AwaFloat Temperature;
+</pre>
+
+Also replace all instances of Totalcount with Temperature.
+
+Technically that is all that you need to do from an Awa perspective, however all the names are still set to "Counter" related words, so you can change these if you would like to, though functionally it will make no difference.
+
+### Reading Temperature Values using LetMeCreate
+
+The LetMeCreate library is designed to make interacting with peripherals and on-board i/o as easy as possible. The switchcounter example makes use of it to use the switch. We first need to remove all the switch logic, and then add in the temperature sensor code. This temperature sensor code is based on the example [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3) in the library itself.
+
+First remove the callback function:
+
+<pre>
+/**Switch Callback Function**/
+static AwaStaticClient * awaClient = NULL;
+static int currentcount = 0;
+
+static void addcount(void)
+{
+    currentcount++;
+    counter[0].Totalcount = currentcount;
+    AwaStaticClient_ResourceChanged(awaClient, 3200, 0, 5501);
+}
+</pre>
+
+and remove the inits:
+
+<pre>
+    /**Init Switch and Callback**/
+    switch_init();
+    switch_add_callback(SWITCH_1_PRESSED, addcount);
+</pre>
+
+With those 2 pieces of code removed, all the switch related code is gone.
+
+Replace the while(1) loop within the main() with this:
+
+<pre>
+    int instance = 0;
+    i2c_init();
+	i2c_select_bus(MIKROBUS_1);
+
+    while (1)
+    {
+        AwaStaticClient_Process(awaClient);
+	    
+	    //LetMeCreate Thermo3 Click Read
+        float temperature = 0.f;
+
+	    thermo3_click_enable(0);
+	    thermo3_click_get_temperature(&temperature);
+	
+        //Update LWM2M resource
+        counter[instance].Temperature = temperature;
+        AwaStaticClient_ResourceChanged(awaClient, 3303, 0, 5700);
+
+        //Delay between temperature readings
+        sleep(2);           
+    }
+</pre>
+
+_Note that if you changed the variable names, counter[instance] will need to be changed to match your new name._
+
+This block of code is 'borrowed' from the LetMeCreate library examples [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3). We've modified it slightly to add the lwm2m resource update and add a delay between readings.
