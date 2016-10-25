@@ -156,7 +156,7 @@ Change all the instances of 3200 to 3303, and all instances of 5501 with 5700.  
 AwaStaticClient_DefineResource(awaClient, 3200, 5501, "Counter",AwaResourceType_Integer, 0, 1, AwaResourceOperations_ReadOnly);
 </pre>
 
-to have AwaResourcetype_Float instead of AwaResourceType_Integer. This will correctly set up the Resource to expect a float value. Change the following line within the counter definition struct:
+to have AwaResourceType_Float instead of AwaResourceType_Integer. This will correctly set up the Resource to expect a float value. Change the following line within the counter definition struct:
 
 <pre>
 int Totalcount;
