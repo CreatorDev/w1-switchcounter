@@ -23,18 +23,18 @@ It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros m
 
 There are 2 ways to complete the set up process. 
 
-Either run the following script in the desired folder on your Linux PC/VM:
+Either download the following script into the desired folder on your Linux PC/VM:
 
-[buildenvironment.sh](https://drive.google.com/open?id=0B5jPTn496dprUHppR25oZGthUmM)
+[buildenvironment.sh](https://gist.github.com/MattAtkinson/3ee477c92ff10c3a246c3ab27d864b58)
 
-Move the script to a folder of your choice, and run it with:
+and run it with:
 
 <pre>
 $ chmod +x buildenvironment.sh
 $ ./buildenvironment.sh
 </pre>
 
-then [skip ahead to configuring your application](#securely-connecting-to-device-server) once the process has finished. You will be left with 2 folders within the directory: openwrt/ and custom/. 
+then [skip ahead to configuring your application](#securely-connecting-to-device-server) once the process has finished. You will be left with 2 folders within the directory: openwrt/ and custom/.
 
 **--- OR ---**
 
@@ -64,14 +64,13 @@ $ git clone http://github.com/mattatkinson/w1-switchcounter
 
 ### Set up your OpenWrt feed
 
-Navigate back to the openwrt SDK folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
+Navigate back to the openwrt/ folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
 
 <pre>
-$ cd openwrt
 $ echo src-link custom /home/username/ci40/custom >> feeds.conf.default
 </pre>
 
-Now update your OpenWrt feeds to add your new package and then build:
+Now update your OpenWrt feeds to add your new package:
 
 <pre>
 $ ./scripts/feeds update -a && ./scripts/feeds install -a
