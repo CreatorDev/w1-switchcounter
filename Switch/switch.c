@@ -52,15 +52,14 @@ static void SetInitialValues(AwaStaticClient * awaClient)
     AwaStaticClient_CreateObjectInstance(awaClient, 3, OBJECT_INSTANCE_ID);
 
     AwaStaticClient_CreateResource(awaClient, 3, OBJECT_INSTANCE_ID, 0);
-    strcpy(device[instance].Manufacturer, "Creator Digital Input");
+    strcpy(device[OBJECT_INSTANCE_ID].Manufacturer, "Creator Digital Input");
 
     AwaStaticClient_CreateResource(awaClient, 3200, OBJECT_INSTANCE_ID, 5501);
-    counter[instance].Totalcount = 0;
+    counter[OBJECT_INSTANCE_ID].Totalcount = 0;
 }
 
-bool ReadCertificate(const char *filePath, char **certificate)
+bool ReadCertificate(const char *filePath, uint8_t **certificate, uint32_t *certificate_length)
 {
-    size_t inputFileSize;
     FILE *inputFile = fopen(filePath, "rb");
     if (inputFile == NULL)
     {
@@ -69,16 +68,23 @@ bool ReadCertificate(const char *filePath, char **certificate)
     }
     if (fseek(inputFile, 0, SEEK_END) != 0)
     {
+        fclose(inputFile);
         printf("Can't set file offset.");
         return false;
     }
-    inputFileSize = ftell(inputFile);
+    *certificate_length = ftell(inputFile);
     rewind(inputFile);
-    *certificate = malloc(inputFileSize * (sizeof(char)));
-    fread(*certificate, sizeof(char), inputFileSize, inputFile);
+    *certificate = malloc(*certificate_length * (sizeof(uint8_t)));
+    if (fread(*certificate, sizeof(uint8_t), *certificate_length, inputFile) != *certificate_length)
+    {
+        printf("Could not read certificate file");
+        fclose(inputFile);
+        return false;
+    }
     if (fclose(inputFile) == EOF)
     {
         printf("Couldn't close certificate file.");
+        return false;
     }
     return true;
 }
@@ -97,14 +103,14 @@ static void addcount(void)
 
 static volatile bool running = true;
 
-static void exit_program(int signo)
+static void exit_program()
 {
     running = false;
 }
 
 int main(void)
 {
-    char *clientName = "Creator Digital Input"
+    char *clientName = "Creator Digital Input";
     /* Set signal handler to exit program when Ctrl+c is pressed */
     struct sigaction action = {
         .sa_handler = exit_program,
@@ -116,7 +122,8 @@ int main(void)
     srand(time(NULL));
     int port = 6000 + (rand() % 32768);
  
-    char *cert = NULL;
+    uint32_t certificate_length = 0;
+    uint8_t *cert = NULL;
     char *certFilePath = "/etc/config/creatorworkshop.crt"; // Path to Certificate file
 
     awaClient = AwaStaticClient_New();
@@ -124,8 +131,8 @@ int main(void)
     AwaStaticClient_SetLogLevel(AwaLogLevel_Verbose);
     AwaStaticClient_SetEndPointName(awaClient, clientName);
 
-    ReadCertificate(certFilePath, &cert);
-    AwaStaticClient_SetCertificate(awaClient, cert, strlen(cert), AwaSecurityMode_Certificate);
+    ReadCertificate(certFilePath, &cert, &certificate_length);
+    AwaStaticClient_SetCertificate(awaClient, cert, certificate_length, AwaSecurityMode_Certificate);
     
     AwaStaticClient_SetCoAPListenAddressPort(awaClient, "0.0.0.0", port);
     AwaStaticClient_SetBootstrapServerURI(awaClient, "coaps://deviceserver.creatordev.io:15684");
