@@ -1,12 +1,17 @@
+#include <signal.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include <letmecreate/letmecreate.h>
 #include <awa/static.h>
 
-#define COUNTER_INSTANCES 1
+#define COUNTER_INSTANCES       (1)
+#define OBJECT_INSTANCE_ID      (0)
+
 
 /**Define DeviceDetails Object**/
 typedef struct
@@ -43,15 +48,13 @@ static void DefineSwitchCounterObject(AwaStaticClient * awaClient)
 /**Give Resources a starting value**/
 static void SetInitialValues(AwaStaticClient * awaClient)
  {
-    int instance = 0;
- 
-    AwaStaticClient_CreateObjectInstance(awaClient, 3200, instance);
-    AwaStaticClient_CreateObjectInstance(awaClient, 3, instance);
- 
-    AwaStaticClient_CreateResource(awaClient, 3, instance, 0);
-    strcpy(device[instance].Manufacturer, "Imagination Technologies");
- 
-    AwaStaticClient_CreateResource(awaClient, 3200, instance, 5501);
+    AwaStaticClient_CreateObjectInstance(awaClient, 3200, OBJECT_INSTANCE_ID);
+    AwaStaticClient_CreateObjectInstance(awaClient, 3, OBJECT_INSTANCE_ID);
+
+    AwaStaticClient_CreateResource(awaClient, 3, OBJECT_INSTANCE_ID, 0);
+    strcpy(device[instance].Manufacturer, "Creator Digital Input");
+
+    AwaStaticClient_CreateResource(awaClient, 3200, OBJECT_INSTANCE_ID, 5501);
     counter[instance].Totalcount = 0;
 }
 
@@ -92,10 +95,24 @@ static void addcount(void)
     AwaStaticClient_ResourceChanged(awaClient, 3200, 0, 5501);
 }
 
+static volatile bool running = true;
+
+static void exit_program(int signo)
+{
+    running = false;
+}
+
 int main(void)
 {
-    char *clientName = "Creator Digital Input";
- 
+    char *clientName = "Creator Digital Input"
+    /* Set signal handler to exit program when Ctrl+c is pressed */
+    struct sigaction action = {
+        .sa_handler = exit_program,
+        .sa_flags = 0
+    };
+    sigemptyset(&action.sa_mask);
+    sigaction (SIGINT, &action, NULL);
+
     srand(time(NULL));
     int port = 6000 + (rand() % 32768);
  
@@ -103,7 +120,7 @@ int main(void)
     char *certFilePath = "/etc/config/creatorworkshop.crt"; // Path to Certificate file
 
     awaClient = AwaStaticClient_New();
-    
+
     AwaStaticClient_SetLogLevel(AwaLogLevel_Verbose);
     AwaStaticClient_SetEndPointName(awaClient, clientName);
 
@@ -112,9 +129,9 @@ int main(void)
     
     AwaStaticClient_SetCoAPListenAddressPort(awaClient, "0.0.0.0", port);
     AwaStaticClient_SetBootstrapServerURI(awaClient, "coaps://deviceserver.creatordev.io:15684");
- 
+
     AwaStaticClient_Init(awaClient);
- 
+
     DefineSwitchCounterObject(awaClient);
     DefineDeviceDetailsObject(awaClient);
     SetInitialValues(awaClient);
@@ -123,7 +140,7 @@ int main(void)
     switch_init();
     switch_add_callback(SWITCH_1_PRESSED, addcount);
 
-    while (1)
+    while (running)
     {
         AwaStaticClient_Process(awaClient);
     }
