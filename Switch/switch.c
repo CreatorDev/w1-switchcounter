@@ -49,33 +49,35 @@ static void SetInitialValues(AwaStaticClient * awaClient)
     AwaStaticClient_CreateObjectInstance(awaClient, 3, instance);
  
     AwaStaticClient_CreateResource(awaClient, 3, instance, 0);
-    strcpy(device[instance].Manufacturer, "Creator Digital Input");
+    strcpy(device[instance].Manufacturer, "Imagination Technologies");
  
     AwaStaticClient_CreateResource(awaClient, 3200, instance, 5501);
     counter[instance].Totalcount = 0;
 }
 
-uint8_t HexToByte(const char *value)
+bool ReadCertificate(const char *filePath, char **certificate)
 {
-    uint8_t result = 0;
-    if (value)
+    size_t inputFileSize;
+    FILE *inputFile = fopen(filePath, "rb");
+    if (inputFile == NULL)
     {
-        int count = 2;
-        while (count)
-        {
-            int hex = *value++;
-            if (hex >= '0' && hex <= '9')
-                result |= hex - '0';
-            else if (hex >= 'A' && hex <= 'F')
-                result |= 10 + (hex - 'A');
-            else if (hex >= 'a' && hex <= 'f')
-                result |= 10 + (hex - 'a');
-            count--;
-            if (count > 0)
-                result <<= 4;
-        }
+        printf("Unable to open certificate file under: %s", filePath);
+        return false;
     }
-    return result;
+    if (fseek(inputFile, 0, SEEK_END) != 0)
+    {
+        printf("Can't set file offset.");
+        return false;
+    }
+    inputFileSize = ftell(inputFile);
+    rewind(inputFile);
+    *certificate = malloc(inputFileSize * (sizeof(char)));
+    fread(*certificate, sizeof(char), inputFileSize, inputFile);
+    if (fclose(inputFile) == EOF)
+    {
+        printf("Couldn't close certificate file.");
+    }
+    return true;
 }
 
 /**Switch Callback Function**/
@@ -92,40 +94,21 @@ static void addcount(void)
 int main(void)
 {
     char *clientName = "Creator Digital Input";
-    char *clientIdentity = "";
-    char *clientSecretHex = "";
-    if (!clientName || !clientIdentity || !clientSecretHex) {
-        printf("Please specify CLIENT_NAME, CLIENT_IDENTITY and CLIENT_SECRET environment variables\n");
-        exit(2);
-    }
- 
-    int hexKeyLength = strlen(clientSecretHex);
- 
-    if (hexKeyLength % 2 > 0) {
-        printf("Invalid key\n");
-        exit(2);
-    }
-    int keyLength = hexKeyLength / 2;
-    char *clientKeyBinary = (uint8_t *)malloc(keyLength);
-    if (clientKeyBinary)
-    {
-        char * value = clientSecretHex;
-        int index;
-        for (index = 0; index < keyLength; index++)
-        {
-            clientKeyBinary[index] = HexToByte(value);
-            value += 2;
-        }
-    }
  
     srand(time(NULL));
     int port = 6000 + (rand() % 32768);
  
+    char *cert = NULL;
+    char *certFilePath = "/etc/config/creatorworkshop.crt"; // Path to Certificate file
+
     awaClient = AwaStaticClient_New();
- 
+    
     AwaStaticClient_SetLogLevel(AwaLogLevel_Verbose);
     AwaStaticClient_SetEndPointName(awaClient, clientName);
-    AwaStaticClient_SetPSK(awaClient, clientIdentity, clientKeyBinary, keyLength);
+
+    ReadCertificate(certFilePath, &cert);
+    AwaStaticClient_SetCertificate(awaClient, cert, strlen(cert), AwaSecurityMode_Certificate);
+    
     AwaStaticClient_SetCoAPListenAddressPort(awaClient, "0.0.0.0", port);
     AwaStaticClient_SetBootstrapServerURI(awaClient, "coaps://deviceserver.creatordev.io:15684");
  

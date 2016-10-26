@@ -15,15 +15,13 @@ Areas covered in this project include:
 
 ## Assumptions
 
-This guide assumes that you have flashed the latest Ci40 Creator image onto your Ci40 [**Instructions**](http://docs.creatordev.io) and that you have completed the steps in the [quick start guide](../../guides/quick-start-guide). On Ci40, you may need to install awalwm2m and letmecreate (opkg update && opkg install letmecreate awalwm2m) if you are not using a Creator image.
+This guide assumes that you have flashed the latest Ci40 Creator image onto your Ci40 [Instructions](https://docs.creatordev.io/ci40/guides/openwrt-platform/#system-upgrade) and that you have completed the steps in the [quick start guide](../../guides/quick-start-guide). On Ci40, you may need to install awalwm2m and letmecreate (opkg update && opkg install letmecreate awalwm2m) if you are not using a Creator image.
 
 It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros may work, but this cannot be guaranteed).
 
-## Step-by-Step Setup Instructions
+## Build Environment Setup Instructions
 
-There are 2 ways to complete the set up process. 
-
-Either download the following script into the desired folder on your Linux PC/VM:
+Download the following script into the desired folder on your Linux PC/VM:
 
 [buildenvironment.sh](https://gist.github.com/MattAtkinson/3ee477c92ff10c3a246c3ab27d864b58)
 
@@ -34,69 +32,13 @@ $ chmod +x buildenvironment.sh
 $ ./buildenvironment.sh
 </pre>
 
-then [skip ahead to configuring your application](#securely-connecting-to-device-server) once the process has finished. You will be left with 2 folders within the directory: openwrt/ and custom/.
+This script is stored on gist so that you can see the code and manually run the setup if you prefer.
 
-**--- OR ---**
-
-Complete the following steps manually:
-
-First, you need to install the OpenWrt build dependencies on your machine:
-
-<pre>
-$ sudo apt-get install git libncurses5-dev libncursesw5-dev zlib1g-dev libssl-dev gawk subversion device-tree-compiler
-</pre>
-
-### Get the SDK and Source Code
-
-Then you need to download and extract the OpenWrt SDK:
-
-<pre>
-$ wget https://downloads.creatordev.io/pistachio/marduk/OpenWrt-SDK-0.10.4-pistachio-marduk_gcc-5.3.0_musl-1.1.14.Linux-x86_64.tar.bz2
-$ mkdir openwrt && tar -xvf OpenWrt-SDK-0.10.4-pistachio-marduk_gcc-5.3.0_musl-1.1.14.Linux-x86_64.tar.bz2 -C openwrt/ --strip-components 1
-</pre>
-
-Git clone the example project repository:
-
-<pre>
-$ mkdir custom && cd custom
-$ git clone http://github.com/mattatkinson/w1-switchcounter
-</pre>
-
-### Set up your OpenWrt feed
-
-Navigate back to the openwrt/ folder and add your custom folder as an OpenWrt feed (change the path in the echo command to be the **absolute path** to the 'custom' folder created by the earlier git clone):
-
-<pre>
-$ echo src-link custom /home/username/ci40/custom >> feeds.conf.default
-</pre>
-
-Now update your OpenWrt feeds to add your new package:
-
-<pre>
-$ ./scripts/feeds update -a && ./scripts/feeds install -a
-</pre>
-
-### Securely Connecting to Device Server
-
-Before attempting to build and run the example, you need to add a PSK (pre-shared key) to the source code to securely link the Ci40 to your account on the Device Server.
-
-In a browser, go to [console.creatordev.io](http:/console.creatordev.io) and create an account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then click the "Get PSK+" button. Copy the "Identity" and "Secret" values into the following piece of code (in between the quotes) within custom/w1-switchcounter/Switch/switch.c:
-
-<pre>
-... 
-int main(void) 
-{ 
-    char *clientName = "Creator Digital Input"; 
-    char *clientIdentity = ""; 
-    char *clientSecretHex = ""; 
-... 
-</pre>
-
-Save the file, and move onto building the application.
+Once the script has completed its install procedure, you will have an openwrt/ folder (containing the Creator OpenWrt SDK) and a custom/ folder (containing the workshop code and makefiles) in the same directory.
 
 ### Building your Application
 
-Run the following command in your openwrt folder:
+Run the following command in your new openwrt folder:
 <pre>
 $ make package/w1-switchcounter/compile
 </pre>
@@ -105,15 +47,22 @@ There are normally a lot of warnings created at the start of the build process, 
 
 Once the build is complete, you can find the ipk file in the bin/pistachio/packages/custom folder.
 
-### Running the Application on Ci40
+### Securely Provisioning to Device Server and Running the Application
 
-You now need to get this .ipk file onto your Ci40. There are numerous ways to do this (usb/microsd/scp/fileserver etc.) but we will use scp in this example. Check your Ci40's IP address by running 'ifconfig' in its terminal, then run the following on your build PC (assuming it is on the same network):
+Before running the example, you need to create a certificate and then copy the certificate and application installer to Ci40. The cretificate securely connects Ci40 to your user account on the Device Server.
+
+![certificateimage](img/cert.jpg)
+
+To get a certificate, go to [console.creatordev.io](http:/console.creatordev.io) and create an account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then change to the "Certificates" tab an click "Get Certificate+" button. Take a copy of this certificate and save it to a file called "creatorworkshop.crt".
+
+You now need to get both the certificate and ipk files onto your Ci40. There are numerous ways to do this (usb/microsd/scp/fileserver etc.) but we will use scp in this example. Check your Ci40's IP address by running 'ifconfig' in its terminal, then run the following on your build PC (using your Ci40 ipaddress):
 
 <pre>
-$ scp switch_1.0.0-1_pistachio.ipk root@ci40ipaddress:/
+$ scp switch_1.0.0-1_pistachio.ipk root@yourci40ipaddress:/
+$ scp creatorworkshop.crt root@yourci40ipaddress:/etc/config
 </pre>
 
-Once you've copied the file, you can install your package and run the application on Ci40 by running the following in its terminal:
+Once you've copied the files, you can install your package and run the application on Ci40 by running the following in its terminal:
 
 <pre>
 /# opkg install switch_1.0.0-1_pistachio.ipk
@@ -121,6 +70,8 @@ Once you've copied the file, you can install your package and run the applicatio
 </pre>
 
 ### Viewing the Data on the Developer Console
+
+![deviceimage](img/device.jpg)
 
 [The Developer Console](http://console.creatordev.io) provides and interface to view the devices connected to Device Server. With your application running on Ci40, navigate to the "Devices" page. Select the device, select Object ID: 3200, and you will see the number of times the button (SW1 on Ci40) has been pressed. You can refresh this value using the on-screen refresh button.
 
