@@ -21,25 +21,19 @@ It is also assumed that you have an Ubuntu 16.04 PC/VM (other versions/distros m
 
 ## Build Environment Setup Instructions
 
-Download the following script into the desired folder on your Linux PC/VM:
-
-[buildenvironment.sh](https://gist.github.com/MattAtkinson/3ee477c92ff10c3a246c3ab27d864b58)
-
-and run it with:
+We have prepared a script that will create the build environment for you. You can inspect the script on gist [here](https://gist.github.com/MattAtkinson/3ee477c92ff10c3a246c3ab27d864b58) and run it manually, or run it directly by pasting this command into your build machines terminal in the desired directory:
 
 <pre>
-$ chmod +x buildenvironment.sh
-$ ./buildenvironment.sh
+$ curl https://gist.githubusercontent.com/MattAtkinson/3ee477c92ff10c3a246c3ab27d864b58/raw | bash
 </pre>
 
-This script is stored on gist so that you can see the code and manually run the setup if you prefer.
-
-Once the script has completed its install procedure, you will have an openwrt/ folder (containing the Creator OpenWrt SDK) and a custom/ folder (containing the workshop code and makefiles) in the same directory.
+Once the script has completed its install procedure, you will have an openwrt/ folder (containing the Creator OpenWrt SDK) and a custom/ folder (containing the workshop code and makefiles).
 
 ### Building your Application
 
-Run the following command in your new openwrt folder:
+Run the following commands:
 <pre>
+$ cd openwrt
 $ make package/w1-switchcounter/compile
 </pre>
 
