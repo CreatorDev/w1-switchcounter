@@ -80,8 +80,9 @@ bool ReadCertificate(const char *filePath, char **certificate)
     return true;
 }
 
-/**Switch Callback Function**/
 static AwaStaticClient * awaClient = NULL;
+
+/**Switch Callback Function**/
 static int currentcount = 0;
 
 static void addcount(void)

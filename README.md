@@ -49,24 +49,24 @@ Once the build is complete, you can find the ipk file in the bin/pistachio/packa
 
 ### Securely Provisioning to Device Server and Running the Application
 
-Before running the example, you need to create a certificate and then copy the certificate and application installer to Ci40. The cretificate securely connects Ci40 to your user account on the Device Server.
+Before running the example, you need to create a certificate and then copy the certificate and application installer to Ci40. The certificate securely connects Ci40 to your user account on the Device Server.
 
 ![certificateimage](img/cert.jpg)
 
 To get a certificate, go to [console.creatordev.io](http:/console.creatordev.io) and create an account (or log in). Once logged in, click on "Device Keys" in the left sidebar and then change to the "Certificates" tab an click "Get Certificate+" button. Take a copy of this certificate and save it to a file called "creatorworkshop.crt".
 
-You now need to get both the certificate and ipk files onto your Ci40. There are numerous ways to do this (usb/microsd/scp/fileserver etc.) but we will use scp in this example. Check your Ci40's IP address by running 'ifconfig' in its terminal, then run the following on your build PC (using your Ci40 ipaddress):
+You now need to get both the certificate and ipk files onto your Ci40. There are numerous ways to do this (usb/microsd/scp/fileserver etc.) but we will use scp in this example. Check your Ci40's IP address by running 'ifconfig' in its terminal, then run the following on your build PC (using your Ci40 ipaddress and the paths to the files):
 
 <pre>
-$ scp switch_1.0.0-1_pistachio.ipk root@yourci40ipaddress:/
-$ scp creatorworkshop.crt root@yourci40ipaddress:/etc/config
+$ scp path/to/switch_1.0.0-1_pistachio.ipk root@yourci40ipaddress:/
+$ scp path/to/creatorworkshop.crt root@yourci40ipaddress:/etc/config
 </pre>
 
 Once you've copied the files, you can install your package and run the application on Ci40 by running the following in its terminal:
 
 <pre>
 /# opkg install switch_1.0.0-1_pistachio.ipk
-/# LD_LIBRARY_PATH=/usr/lib bin/switch
+/# bin/switch
 </pre>
 
 ### Viewing the Data on the Developer Console
@@ -131,7 +131,6 @@ First remove the callback function:
 
 <pre>
 /**Switch Callback Function**/
-static AwaStaticClient * awaClient = NULL;
 static int currentcount = 0;
 
 static void addcount(void)
@@ -142,7 +141,7 @@ static void addcount(void)
 }
 </pre>
 
-and remove the inits:
+and remove the inits form within the main():
 
 <pre>
     /**Init Switch and Callback**/
@@ -180,4 +179,13 @@ Replace the while(1) loop within the main() with this:
 
 _Note that if you changed the variable names, counter[instance] will need to be changed to match your new name._
 
-This block of code is 'borrowed' from the LetMeCreate library examples [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3). We've modified it slightly to add the lwm2m resource update and add a delay between readings. You should now be able to build the project exacltly as before, and run it on Ci40.
+This block of code is 'borrowed' from the LetMeCreate library examples [here](https://github.com/francois-berder/LetMeCreate/tree/master/examples/thermo3). We've modified it slightly to add the lwm2m resource update and add a delay between readings. 
+
+You should now be able to build the project exactly as before and copy the ipk file to Ci40.
+
+Note that to install the new ipk you will have to run:
+
+<pre>
+/# opkg remove switch && opkg install switch_1.0.0-1_pistachio.ipk
+</pre>
+
