@@ -5,15 +5,13 @@ PKG_NAME:=switch
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
-
 include $(INCLUDE_DIR)/package.mk
 
 define Package/switch
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=Switch awa 
-	DEPENDS:=+awalwm2m +letmecreate
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=Switch awa
+  DEPENDS:=+awalwm2m +letmecreate
 endef
 
 define Package/switch/description
