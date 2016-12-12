@@ -8,10 +8,10 @@ PKG_RELEASE:=1
 include $(INCLUDE_DIR)/package.mk
 
 define Package/switch
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=Switch awa 
-	DEPENDS:=+awalwm2m +letmecreate
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=Switch awa
+  DEPENDS:=+awalwm2m +letmecreate
 endef
 
 define Package/switch/description
