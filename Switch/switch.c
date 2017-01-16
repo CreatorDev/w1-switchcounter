@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <awa/common.h>
 #include <awa/client.h>
@@ -57,8 +58,21 @@ static void addcount()
     AwaClientSetOperation_Free(&operation);
 }
 
+/* Ensure that the onboarding process has been completed by checking for a certificate */
+static void certcheck()
+{
+    if(access("/etc/creator/endpoint.crt", F_OK ) != 0)
+    {
+        printf("\nYour Ci40 does not have a Device Server certificate. Please follow the workshop instructions on docs.creatordev.io.\n\n");
+        exit(-1);
+    }
+}
+
 int main(void)
 {
+    /* Check for Device Server certificate */
+    certcheck();
+    
     /* Set signal handler to exit program when Ctrl+c is pressed */
     struct sigaction action = {
         .sa_handler = exit_program,
