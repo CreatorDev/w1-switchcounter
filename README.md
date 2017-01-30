@@ -17,3 +17,7 @@ Areas covered in this project include:
 ---
 
 ## Follow the instructions on [our docs website](https://docs.creatordev.io/ci40/iotkit/workshop-1-switchcounter/)
+
+Visit us at [forum.creatordev.io](http://forum.creatordev.io) for support and discussion.
+
+If you have a contribution to make please follow the processes laid out in [contributor guide](CONTRIBUTING.md).
