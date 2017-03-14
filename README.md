@@ -1,5 +1,7 @@
 ![logo](https://static.creatordev.io/logo-md-s.svg)
 
+[![Build Status](http://jenkins.creatordev.io/buildStatus/icon?job=CreatorDev/w1-switchcounter/master)](http://jenkins.creatordev.io/job/CreatorDev/job/w1-switchcounter/job/master/)
+
 # w1-switchcounter
 
 In this project we will connect a Ci40 to Device Server and log the number of times a button is pressed. This number will be visible on the Developer Console web interface.
